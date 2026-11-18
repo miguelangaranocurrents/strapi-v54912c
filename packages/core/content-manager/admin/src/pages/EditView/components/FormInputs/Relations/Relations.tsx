@@ -797,8 +797,12 @@ const RelationModalWithContext = ({
           }
           hasMoreItems={hasNextPage}
           loading={isLoadingSearchRelations || isLoadingPermissions}
-          onOpenChange={() => {
-            handleSearch(textValue ?? '');
+          onOpenChange={(isOpen) => {
+            // Only (re)run the search when the list is opened. Closing must not push the
+            // text that was typed before a selection back into the search.
+            if (isOpen) {
+              handleSearch(textValue ?? '');
+            }
           }}
           noOptionsMessage={() =>
             formatMessage({

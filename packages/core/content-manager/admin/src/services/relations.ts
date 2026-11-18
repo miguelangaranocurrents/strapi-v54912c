@@ -122,13 +122,21 @@ const relationsApi = contentManagerApi.injectEndpoints({
       },
       serializeQueryArgs: (args) => {
         const { endpointName, queryArgs } = args;
+        /**
+         * The cache key must identify the source of the relations (`id`), the locale/status
+         * and the search. Pagination is excluded so pages keep merging into the same entry.
+         * Without `id`, two dynamic-zone components with identical omit lists share a cache
+         * entry and show each other's available relations.
+         */
+        const params = { ...queryArgs.params };
+        delete params.page;
+        delete params.pageSize;
+
         return {
           endpointName,
           model: queryArgs.model,
           targetField: queryArgs.targetField,
-          _q: queryArgs.params?._q,
-          idsToOmit: queryArgs.params?.idsToOmit,
-          idsToInclude: queryArgs.params?.idsToInclude,
+          ...params,
         };
       },
       merge: (currentCache, newItems) => {
